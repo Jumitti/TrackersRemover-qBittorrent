@@ -26,11 +26,11 @@ pip install trackersremoverqbt
 Then simply run it from the command line:
 
 ```bash
-trackersremoverqbt"
+trackersremoverqbt
 ```
 or
 ```bash
-trqbt"
+trqbt
 ```
 
 Available options:
