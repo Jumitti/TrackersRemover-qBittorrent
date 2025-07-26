@@ -15,6 +15,47 @@ TrackersRemover-qBittorrent is a Python script that connects to qBittorrent's We
 
 ## Installation
 
+### Install via PyPI
+
+Install the package directly using pip:
+
+```bash
+pip install trackersremoverqbt
+```
+
+Then simply run it from the command line:
+
+```bash
+trackersremoverqbt"
+```
+or
+```bash
+trqbt"
+```
+
+Available options:
+
+```bash
+# Exemple
+trackersremoverqbt --host localhost --port 8080 --username admin --password 123456 --verify-webui-certificate True --min-dl-speed 15 --ignored-trackers "tracker1.example.com" "tracker2.example.com"
+```
+
+```--host``` : qBittorrent Web UI address (default: localhost)
+
+```--port``` : Web UI port (default: 8080)
+
+```--username``` : Web UI username (default: admin)
+
+```--password``` : Web UI password (default: 123456)
+
+```--verify-webui-certificate``` : Verify SSL certificate (default: False)
+
+```--min-dl-speed``` : Minimum download speed in KB/s to trigger tracker removal (default: 10)
+
+```--ignored-trackers``` : Additional list of trackers to ignore (default includes DHT, PeX, LSD)
+
+### Or manually
+
 1. **Download the script**
 
    Clone this repository or download the `TRqBt.py` script directly.

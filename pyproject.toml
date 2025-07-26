@@ -1,0 +1,25 @@
+[project]
+name = "trackersremoverqbt"
+version = "0.1.0"
+description = "Automatically removes trackers from active qBittorrent downloads."
+readme = "README.md"
+authors = [
+  { name="Julien Minniti", email="minnitijulien06@gmail.com" }
+]
+license = "MIT"
+requires-python = ">=3.8"
+dependencies = [
+  "qbittorrent-api",
+  "rich"
+]
+
+[project.urls]
+Homepage = "https://github.com/Jumitti/TrackersRemover-qBittorrent"
+
+[project.scripts]
+trackersremoverqbt = "trackersremoverqbt.core:main"
+trqbt = "trackersremoverqbt.core:main"
+
+[build-system]
+requires = ["setuptools", "wheel"]
+build-backend = "setuptools.build_meta"
