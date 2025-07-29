@@ -6,6 +6,7 @@ TrackersRemover-qBittorrent is a Python script that connects to qBittorrent's We
 
 ## Features
 
+- Starts qBittorrent (Windows and macOS)
 - Connects to qBittorrent Web UI via `qbittorrent-api`.
 - Lists torrents and their trackers.
 - Removes non-ignored trackers from torrents actively downloading above a minimum speed.
@@ -13,100 +14,65 @@ TrackersRemover-qBittorrent is a Python script that connects to qBittorrent's We
 
 ---
 
-## Installation
+## Installation via PyPI
 
-### Install via PyPI
+1. **Start qBittorrent and configure qBittorrent Web UI**
 
-Install the package directly using pip:
+2. **Install Python >=3.8 if it is not done**
 
-```bash
-pip install trackersremoverqbt
-```
+3. **Open CMD (Terminal) and install the python package directly using pip:**
 
-Then simply run it from the command line:
-
-```bash
-trackersremoverqbt
-```
-or
-```bash
-trqbt
-```
-
-Available options:
-
-```bash
-# Exemple
-trackersremoverqbt --host localhost --port 8080 --username admin --password 123456 --verify-webui-certificate True --min-dl-speed 15 --ignored-trackers "tracker1.example.com" "tracker2.example.com"
-```
-
-```--host``` : qBittorrent Web UI address (default: localhost)
-
-```--port``` : Web UI port (default: 8080)
-
-```--username``` : Web UI username (default: admin)
-
-```--password``` : Web UI password (default: 123456)
-
-```--verify-webui-certificate``` : Verify SSL certificate (default: False)
-
-```--min-dl-speed``` : Minimum download speed in KB/s to trigger tracker removal (default: 10)
-
-```--ignored-trackers``` : Additional list of trackers to ignore (default includes DHT, PeX, LSD)
-
-### Or manually
-
-1. **Download the script**
-
-   Clone this repository or download the `TRqBt.py` script directly.
-
-2. **Set up Python environment**
-
-   Make sure you have Python 3 installed (tested with Python 3.12).
-
-   Install the required packages via pip:
-
-   ```bash
-   pip install qbittorrent-api rich
-   ```
-   
-3. **Configure the script**
-
-- Open the TRqBt.py file and update the qBittorrent connection settings to match your setup:
-
-    ```python
-    client = Client(
-        host="localhost",   # qBittorrent Web UI address
-        port=8080,          # Web UI port
-        username="admin",   # Web UI username
-        password="123456",  # Web UI password
-        VERIFY_WEBUI_CERTIFICATE=False
-    )
-    ```
-
-- Optionally adjust the minimum download speed (in KB/s) to trigger tracker removal:
-
-    ```python
-    MIN_DL_SPEED = 10  # Minimum download speed in KB/s
-    ```
-
-- You can also customize the list of trackers to ignore (default includes DHT, PeX, LSD):
-
-    ```python
-    IGNORED_TRACKERS = {"** [DHT] **", "** [PeX] **", "** [LSD] **"}
-    ```
-
-- Run the script
-
-    Make sure qBittorrent is running and the Web UI is enabled.
-    
     ```bash
-    python TRqBt.py
+    pip install trackersremoverqbt
     ```
+
+4. **Then simply run it from the command line in CMD:**
+
+    ```bash
+    trackersremoverqbt
+    # or
+    trqbt
+    ```
+
+**Available options:**
+
+```bash
+# Exemple (works with trqbt instead of trackersremoverqbt)
+trackersremoverqbt --host localhost --port 8080 --username admin --password 123456 --no-verify True --min-dl-speed 15 --launch-qbt True --ignored-trackers "tracker1.example.com" "tracker2.example.com"
+# or
+trackersremoverqbt -H localhost -P 8080 -U admin -PSW 123456 --no-verify True -MDL 15 -QBT True --ignored-trackers "tracker1.example.com" "tracker2.example.com"
+
+# For version
+trackersremoverqbt -V
+# or
+trackersremoverqbt --version
+
+# For help
+trackersremoverqbt --help
+```
+
+| Argument             | Alias(s) | Description                                               | Default Value                             |
+|----------------------|----------|-----------------------------------------------------------|-------------------------------------------|
+| `--host`             | `-H`     | qBittorrent Web UI address                                | `localhost`                               |
+| `--port`             | `-P`     | Web UI port                                               | `8080`                                    |
+| `--username`         | `-U`     | Web UI username                                           | `admin`                                   |
+| `--password`         | `-PSW`   | Web UI password                                           | `123456`                                  |
+| `--no-verify`        |          | Disable SSL certificate verification                      | `True` (verification disabled by default) |
+| `--min-dl-speed`     | `-MDL`   | Minimum download speed in KB/s to trigger tracker removal | `10`                                      |
+| `--ignored-trackers` |          | Additional list of trackers to ignore (added to defaults) | `[]` (empty by default)                   |
+| `--launch-qbt`       | `-QBT`   | Launch qBittorrent if not running                         | `True`                                    |
+| `--version`          | `-V`     | Show program version and exit                             |                                           |
+| `--help`             |          | Show this help message and exit                           |                                           |
   
 ## Usage
 The script runs in a loop, periodically checking torrents and removing trackers that meet the criteria. It outputs a 
 formatted table of torrents with their trackers and logs removal actions.
+
+![alt text](img/login.png)
+
+![alt text](img/torrent.png)
+
+![alt text](img/remove.png)
 
 ### Disclaimer
 
