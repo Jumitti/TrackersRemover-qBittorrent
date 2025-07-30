@@ -26,13 +26,14 @@ TrackersRemover-qBittorrent is a Python script that connects to qBittorrent's We
     pip install trackersremoverqbt
     ```
 
-4. **Then simply run it from the command line in CMD:**
+### Run in CMD
+**Simply run it from the command line in CMD:**
 
-    ```bash
-    trackersremoverqbt
-    # or
-    trqbt
-    ```
+ ```bash
+ trackersremoverqbt
+ # or
+ trqbt
+ ```
 
 **Available options:**
 
@@ -64,7 +65,61 @@ trackersremoverqbt --help
 | `--version`          | `-V`     | Show program version and exit                             |                                           |
 | `--help`             |          | Show this help message and exit                           |                                           |
   
-## Usage
+### Run in python script
+
+You can use `trackersremoverqbt` as a Python module instead of via command line:
+
+#### Example
+
+```python
+from trackersremoverqbt.core import main as trqbt
+
+trqbt(
+    host="localhost",
+    port=8080,
+    username="admin",
+    password="123456",
+    no_verify=True,
+    min_dl_speed=10,
+    ignored_trackers=[
+        "http://tracker.example.com/announce",
+        "http://tracker.another.net/announce"
+    ],
+    launch_qbt=True
+)
+```
+
+All CLI arguments are available as function parameters.
+
+---
+
+#### Using a `whitelist_trackers.txt` file
+
+If you have a list of trusted trackers in a file, you can load them like this:
+
+##### `whitelist_trackers.txt` content:
+
+```
+http://tracker.example1.com/announce
+http://tracker.example2.com/announce
+http://tracker.example3.com/announce
+http://tracker.another.net/announce
+```
+
+##### Example:
+
+```python
+from trackersremoverqbt.core import main as trqbt
+
+# Load whitelist from file
+with open("whitelist_trackers.txt", "r", encoding="utf-8") as f:
+    whitelist = [line.strip() for line in f if line.strip()]
+
+# Call main with whitelist
+trqbt(ignored_trackers=whitelist)
+```
+
+## PoC
 The script runs in a loop, periodically checking torrents and removing trackers that meet the criteria. It outputs a 
 formatted table of torrents with their trackers and logs removal actions.
 
