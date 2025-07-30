@@ -7,6 +7,8 @@ import sys
 import threading
 import time
 import importlib.metadata
+import sys
+import shlex
 
 import qbittorrentapi
 from qbittorrentapi import Client, NotFound404Error
@@ -110,34 +112,55 @@ def login_qbittorrent(client, message):
                 time.sleep(5)
 
 
-def parse_args():
-    parser = argparse.ArgumentParser(
-        description="Remove non-ignored trackers from active qBittorrent downloads.",
-        add_help=False  # disable default -h/--help
-    )
-    parser.add_argument("--help", action="help", help="Show this help message and exit")
+def parse_args(argv=None):
+    parser = argparse.ArgumentParser(description="Remove non-ignored trackers from active qBittorrent downloads.")
+
     parser.add_argument("-H", "--host", default="localhost", help="qBittorrent Web UI host")
     parser.add_argument("-P", "--port", type=int, default=8080, help="qBittorrent Web UI port")
     parser.add_argument("-U", "--username", default="admin", help="qBittorrent Web UI username")
     parser.add_argument("-PSW", "--password", default="123456", help="qBittorrent Web UI password")
     parser.add_argument("--no-verify", default=True, help="Disable SSL certificate verification")
-    parser.add_argument("-MDL", "--min-dl-speed", type=int, default=10, help="Minimum download speed in KB/s to remove trackers")
-    parser.add_argument("--ignored-trackers", nargs="*", default=[], help="Additional trackers to ignore (added to defaults)")
+    parser.add_argument("-MDL", "--min-dl-speed", type=int, default=10,
+                        help="Minimum download speed in KB/s to remove trackers")
+    parser.add_argument("--ignored-trackers", nargs="*", default=[],
+                        help="Additional trackers to ignore (added to defaults)")
     parser.add_argument("-QBT", "--launch-qbt", default=True, help="Launch qBittorrent if not running")
 
+    # Version
     try:
         version = importlib.metadata.version("trackersremoverqbt")
     except importlib.metadata.PackageNotFoundError:
         version = "unknown"
-
     parser.add_argument("-V", "--version", action="version", version=f"TrackersRemover-qBittorrent {version}",
                         help="Show program version and exit")
-    return parser.parse_args()
+
+    return parser.parse_args(argv)
 
 
-def main():
+def main(host=None, port=None, username=None, password=None, no_verify=True, min_dl_speed=None,
+         ignored_trackers=None, launch_qbt=True):
+
+    argv = []
+
+    if host is not None:
+        argv += ["--host", host]
+    if port is not None:
+        argv += ["--port", str(port)]
+    if username is not None:
+        argv += ["--username", username]
+    if password is not None:
+        argv += ["--password", password]
+    if no_verify is False:
+        argv += ["--no-verify", "False"]
+    if min_dl_speed is not None:
+        argv += ["--min-dl-speed", str(min_dl_speed)]
+    if ignored_trackers:
+        argv += ["--ignored-trackers"] + ignored_trackers
+    if launch_qbt is False:
+        argv += ["--launch-qbt", "False"]
+
+    args = parse_args(argv if argv else None)
     global connection_lost
-    args = parse_args()
 
     if args.launch_qbt:
         print("[blue]Attempting to launch qBittorrent...[/blue]")
