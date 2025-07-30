@@ -23,3 +23,6 @@ trqbt = "trackersremoverqbt.core:main"
 [build-system]
 requires = ["setuptools", "wheel"]
 build-backend = "setuptools.build_meta"
+
+[tool.setuptools.packages.find]
+exclude = ["img"]
