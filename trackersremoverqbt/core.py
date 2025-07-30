@@ -1,4 +1,7 @@
 import argparse
+import importlib.metadata
+import importlib.metadata
+import json
 import os
 import platform
 import shutil
@@ -6,11 +9,8 @@ import subprocess
 import sys
 import threading
 import time
-import importlib.metadata
-import sys
-import shlex
+import urllib.request
 
-import qbittorrentapi
 from qbittorrentapi import Client, NotFound404Error
 from rich import print
 from rich.table import Table
@@ -53,6 +53,21 @@ class Spinner:
         print()
         if exception is not None:
             return False
+
+
+def check_for_update(package_name="trackersremoverqbt"):
+    try:
+        current_version = importlib.metadata.version(package_name)
+
+        with urllib.request.urlopen(f"https://pypi.org/pypi/{package_name}/json") as response:
+            data = json.load(response)
+            latest_version = data["info"]["version"]
+
+        if current_version != latest_version:
+            print(f"[yellow]A new version of {package_name} is available: {latest_version} (you have {current_version})[/yellow]")
+            print("[yellow]Run 'pip install --upgrade trackersremoverqbt' to update.[/yellow]")
+    except Exception:
+        pass
 
 
 def launch_qbittorrent():
@@ -126,7 +141,6 @@ def parse_args(argv=None):
                         help="Additional trackers to ignore (added to defaults)")
     parser.add_argument("-QBT", "--launch-qbt", default=True, help="Launch qBittorrent if not running")
 
-    # Version
     try:
         version = importlib.metadata.version("trackersremoverqbt")
     except importlib.metadata.PackageNotFoundError:
@@ -139,6 +153,8 @@ def parse_args(argv=None):
 
 def main(host=None, port=None, username=None, password=None, no_verify=True, min_dl_speed=None,
          ignored_trackers=None, launch_qbt=True):
+
+    check_for_update()
 
     argv = []
 
