@@ -1,6 +1,6 @@
 [project]
 name = "trackersremoverqbt"
-version = "0.3.3"
+version = "0.4.0"
 description = "Automatically removes trackers from active qBittorrent downloads."
 readme = "README.md"
 authors = [
@@ -19,6 +19,9 @@ Homepage = "https://github.com/Jumitti/TrackersRemover-qBittorrent"
 [project.scripts]
 trackersremoverqbt = "trackersremoverqbt.core:main"
 trqbt = "trackersremoverqbt.core:main"
+
+trackersremoverqbt_tk = "trackersremoverqbt.core_tk:main"
+trqbt_tk = "trackersremoverqbt.core_tk:main"
 
 [build-system]
 requires = ["setuptools", "wheel"]

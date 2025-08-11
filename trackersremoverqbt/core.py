@@ -53,6 +53,7 @@ class Spinner:
         print()
         if exception is not None:
             return False
+        return None
 
 
 def check_for_update(package_name="trackersremoverqbt"):
