@@ -13,6 +13,7 @@ TrackersRemover-qBittorrent is a Python script that connects to qBittorrent's We
 - Lists torrents and their trackers.
 - Removes non-ignored trackers from torrents actively downloading above a minimum speed.
 - Configurable ignored trackers list and minimum download speed threshold.
+- 🍃 A beautiful new graphical interface in TKinter
 
 ---
 
@@ -64,9 +65,26 @@ trackersremoverqbt --help
 | `--min-dl-speed`     | `-MDL`   | Minimum download speed in KB/s to trigger tracker removal | `10`                                      |
 | `--ignored-trackers` |          | Additional list of trackers to ignore (added to defaults) | `[]` (empty by default)                   |
 | `--launch-qbt`       | `-QBT`   | Launch qBittorrent if not running                         | `True`                                    |
+| `--macmenu`          | `-MM`    | Display qBittorrent in Mac menu bar                       | `False`                                   |
 | `--version`          | `-V`     | Show program version and exit                             |                                           |
 | `--help`             |          | Show this help message and exit                           |                                           |
   
+#### ⚠️ For [MacMenu-qBittorrent](https://github.com/Jumitti/MacMenu-qBittorrent)
+
+All options related to [MacMenu-qBittorrent](https://github.com/Jumitti/MacMenu-qBittorrent) (```--macmenu``` and ``-MM``) are only enabled if you are using MacOS.
+
+### Run with GUI (TKinter)
+
+ ```bash
+ trackersremoverqbt_tk
+ # or
+ trqbt_tk
+ ```
+
+All CLI arguments are available as function parameters.
+
+---
+
 ### Run in python script
 
 You can use `trackersremoverqbt` as a Python module instead of via command line:
@@ -87,7 +105,8 @@ trqbt(
         "http://tracker.example.com/announce",
         "http://tracker.another.net/announce"
     ],
-    launch_qbt=True
+    launch_qbt=True,
+   macmenu=False
 )
 ```
 
@@ -130,6 +149,10 @@ formatted table of torrents with their trackers and logs removal actions.
 ![alt text](img/torrent.png)
 
 ![alt text](img/remove.png)
+
+![alt text](img/trqbt_tk.png)
+
+![alt text](img/macmenu.png)
 
 ### Disclaimer
 

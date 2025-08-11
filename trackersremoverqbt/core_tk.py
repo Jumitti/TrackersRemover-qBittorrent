@@ -1,63 +1,28 @@
-import tkinter as tk
-from tkinter import scrolledtext, messagebox, filedialog
 import threading
 import time
-from . import core
-import sys
+import tkinter as tk
+from tkinter import scrolledtext, messagebox, filedialog
+
+try:
+    from . import core
+except ImportError:
+    import core
 import multiprocessing
+import subprocess
+import sys
+import os
 
 from qbittorrentapi import Client
-
-if sys.platform == "darwin":
-    import rumps
 
 DEFAULT_IGNORED_TRACKERS = {"** [DHT] **", "** [PeX] **", "** [LSD] **"}
 connection_lost = False
 
 
-def menu_process_func(host, port, username, password, verify_ssl, min_dl, ignored_trackers):
-    class QBitTorrentMenuApp(rumps.App):
-        def __init__(self):
-            super().__init__("qBittorrent")
-            self.client = Client(
-                host=host,
-                port=port,
-                username=username,
-                password=password,
-                VERIFY_WEBUI_CERTIFICATE=verify_ssl,
-            )
-            self.update_interval = 5
-            self.menu.clear()
-            self.timer = rumps.Timer(self.update_menu, self.update_interval)
-            self.timer.start()
-
-        @rumps.timer(5)
-        def update_menu(self, _=None):
-            try:
-                torrents = self.client.torrents_info()
-                self.menu.clear()
-                for t in torrents:
-                    progress = f"{t.progress * 100:.1f}%"
-                    self.menu.add(f"{t.name} — {progress}")
-            except Exception as e:
-                self.menu.clear()
-                self.menu.add(f"Error: {e}")
-
-        @rumps.clicked("Quit")
-        def quit_app(self, _):
-            rumps.quit_application()
-
-    app = QBitTorrentMenuApp()
-    app.run()
-
-
-def start_mac_menu_process(host, port, username, password, verify_ssl, min_dl, ignored_trackers):
-    p = multiprocessing.Process(
-        target=menu_process_func,
-        args=(host, port, username, password, verify_ssl, min_dl, ignored_trackers)
-    )
-    p.daemon = True
-    p.start()
+def start_mac_menu_subprocess(host, port, username, password):
+    script_dir = os.path.dirname(os.path.abspath(__file__))
+    launcher_path = os.path.join(script_dir, "mmqbt.py")
+    cmd = [sys.executable, launcher_path, host, str(port), username, password]
+    p = subprocess.Popen(cmd)
     return p
 
 
@@ -105,7 +70,7 @@ class QBTApp(tk.Tk):
         self.btn_add_from_file = tk.Button(frame_params, text="Add from file...", command=self.add_ignored_from_file)
         self.btn_add_from_file.grid(row=3, column=3, sticky="w", pady=(2, 2), padx=(75, 75))
 
-        tk.Label(frame_params, text="Ignored trackers:").grid(row=5, column=0, sticky="ne", pady=(0, 0))
+        tk.Label(frame_params, text="Ignored trackers:").grid(row=5, column=0, sticky="ne")
         self.list_ignored = tk.Listbox(frame_params, height=6, width=60, selectmode=tk.EXTENDED)
         self.list_ignored.grid(row=5, column=1, columnspan=3, sticky="w")
 
@@ -120,9 +85,6 @@ class QBTApp(tk.Tk):
 
         self.reset_default_trackers(initial=True)
 
-        frame_buttons = tk.Frame(self)
-        frame_buttons.pack(padx=10, pady=10, fill="x")
-
         self.var_verify_ssl = tk.BooleanVar(value=True)
         self.chk_verify_ssl = tk.Checkbutton(frame_params, text="Verify WebUI Certificate",
                                              variable=self.var_verify_ssl)
@@ -133,6 +95,9 @@ class QBTApp(tk.Tk):
             self.chk_mac_menu = tk.Checkbutton(frame_params, text="Enable macOS Menu Bar Icon",
                                                variable=self.var_mac_menu)
             self.chk_mac_menu.grid(row=7, column=1, sticky="w", pady=(5, 5), columnspan=2)
+
+        frame_buttons = tk.Frame(self)
+        frame_buttons.pack(padx=10, pady=10, fill="x")
 
         self.btn_start = tk.Button(frame_buttons, text="Start", command=self.start_thread)
         self.btn_start.pack(side="left")
@@ -152,8 +117,9 @@ class QBTApp(tk.Tk):
         self._running = False
         self.client = None
         self.thread = None
-
         self.mac_menu_process = None
+
+        self.protocol("WM_DELETE_WINDOW", self.on_closing)
 
     def add_ignored_tracker(self):
         tracker = self.entry_ignored_tracker.get().strip()
@@ -253,9 +219,8 @@ class QBTApp(tk.Tk):
         self.thread.start()
 
         if sys.platform == "darwin" and self.var_mac_menu.get():
-            self.mac_menu_process = start_mac_menu_process(
-                host, port, username, password, verify_ssl, min_dl, ignored_list
-            )
+            self.mac_menu_process = start_mac_menu_subprocess(
+                host, port, username, password)
 
     def stop(self):
         self._running = False
@@ -266,6 +231,10 @@ class QBTApp(tk.Tk):
         if sys.platform == "darwin" and self.mac_menu_process:
             self.mac_menu_process.terminate()
             self.mac_menu_process = None
+
+    def on_closing(self):
+        self.stop()
+        self.destroy()
 
     def run(self, host, port, username, password, ignored_trackers, min_dl_speed, verify_ssl):
         global connection_lost
@@ -320,10 +289,10 @@ class QBTApp(tk.Tk):
 
 
 def main():
+    multiprocessing.set_start_method('spawn')
     app = QBTApp()
     app.mainloop()
 
 
 if __name__ == "__main__":
-    multiprocessing.set_start_method('spawn')
     main()

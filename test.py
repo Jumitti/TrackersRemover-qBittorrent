@@ -10,8 +10,9 @@ import sys
 import threading
 import time
 import urllib.request
-
+import threading
 import macmenuqbt.core as mmqbt
+
 from qbittorrentapi import Client, NotFound404Error
 from rich import print
 from rich.table import Table
@@ -142,7 +143,6 @@ def parse_args(argv=None):
     parser.add_argument("--ignored-trackers", nargs="*", default=[],
                         help="Additional trackers to ignore (added to defaults)")
     parser.add_argument("-QBT", "--launch-qbt", default=True, help="Launch qBittorrent if not running")
-    parser.add_argument("-MM", "--macmenu", default=False, help="Display qBittorrent in Mac menu bar")
 
     try:
         version = importlib.metadata.version("trackersremoverqbt")
@@ -151,54 +151,55 @@ def parse_args(argv=None):
     parser.add_argument("-V", "--version", action="version", version=f"TrackersRemover-qBittorrent {version}",
                         help="Show program version and exit")
 
+    parser.add_argument("-MM", "--macmenu", default=False, help="Display qBittorrent in Mac menu bar")
+    parser.add_argument("-I", "--interval", default=5, help="Update interval in seconds")
+
     return parser.parse_args(argv)
 
 
-def run_macmenu(host, port, username, password):
-    mmqbt.main(host=host, port=port, username=username, password=password, interval=5)
+def run_macmenu(host, port, username, password, interval):
+    mmqbt.main(host=host, port=port, username=username, password=password, interval=interval)
 
 
-def main(host=None, port=None, username=None, password=None, no_verify=None, min_dl_speed=None,
-         ignored_trackers=None, launch_qbt=None, macmenu=None, interval=None):
+def main(host=None, port=None, username=None, password=None, no_verify=True, min_dl_speed=None,
+         ignored_trackers=None, launch_qbt=True, macmenu=False, interval=5):
 
     check_for_update()
 
     argv = []
 
-    if any(param is not None for param in [host, port, username, password, no_verify,
-                                           min_dl_speed, ignored_trackers, launch_qbt, macmenu]):
-        if host is not None:
-            argv += ["--host", host]
-        if port is not None:
-            argv += ["--port", str(port)]
-        if username is not None:
-            argv += ["--username", username]
-        if password is not None:
-            argv += ["--password", password]
-        if no_verify is not None:
-            argv += ["--no-verify", str(no_verify)]
-        if min_dl_speed is not None:
-            argv += ["--min-dl-speed", str(min_dl_speed)]
-        if ignored_trackers:
-            argv += ["--ignored-trackers"] + ignored_trackers
-        if launch_qbt is not None:
-            argv += ["--launch-qbt", str(launch_qbt)]
-        if macmenu is not None:
-            argv += ["--macmenu", str(macmenu)]
-    else:
-        argv = None
+    if host is not None:
+        argv += ["--host", host]
+    if port is not None:
+        argv += ["--port", str(port)]
+    if username is not None:
+        argv += ["--username", username]
+    if password is not None:
+        argv += ["--password", password]
+    if no_verify is False:
+        argv += ["--no-verify", "False"]
+    if min_dl_speed is not None:
+        argv += ["--min-dl-speed", str(min_dl_speed)]
+    if ignored_trackers:
+        argv += ["--ignored-trackers"] + ignored_trackers
+    if launch_qbt is False:
+        argv += ["--launch-qbt", "False"]
+    if macmenu is False:
+        argv += ["--macmenu", "False"]
+    if interval is not None:
+        argv += ["--interval", str(interval)]
 
-    args = parse_args(argv)
+    args = parse_args(argv if argv else None)
     global connection_lost
 
-    if args.launch_qbt == 'True' or args.launch_qbt is True:
+    if args.launch_qbt:
         print("[blue]Attempting to launch qBittorrent...[/blue]")
         launch_qbittorrent()
         time.sleep(3)
 
-    if platform.system() == "Darwin" and args.macmenu == 'True':
+    if platform.system() == "Darwin" and args.macmenu is True:
         threading.Thread(target=run_macmenu(args.host, args.port, args.username,
-                                            args.password), daemon=True).start()
+                                            args.password, args.interval), daemon=True).start()
 
     client = Client(
         host=args.host,
