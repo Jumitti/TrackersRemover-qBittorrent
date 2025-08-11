@@ -14,6 +14,7 @@ import os
 
 from qbittorrentapi import Client
 
+
 DEFAULT_IGNORED_TRACKERS = {"** [DHT] **", "** [PeX] **", "** [LSD] **"}
 connection_lost = False
 
@@ -120,6 +121,8 @@ class QBTApp(tk.Tk):
         self.mac_menu_process = None
 
         self.protocol("WM_DELETE_WINDOW", self.on_closing)
+
+        core.check_for_update()
 
     def add_ignored_tracker(self):
         tracker = self.entry_ignored_tracker.get().strip()
