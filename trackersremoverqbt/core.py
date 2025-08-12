@@ -11,7 +11,11 @@ import threading
 import time
 import urllib.request
 
-import macmenuqbt.core as mmqbt
+try:
+    import macmenuqbt.core as mmqbt
+except ImportError:
+    pass
+
 from qbittorrentapi import Client, NotFound404Error
 from rich import print
 from rich.table import Table
@@ -68,6 +72,7 @@ def check_for_update(package_name="trackersremoverqbt"):
         if current_version != latest_version:
             print(f"[yellow]A new version of {package_name} is available: {latest_version} (you have {current_version})[/yellow]")
             print("[yellow]Run 'pip install --upgrade trackersremoverqbt' to update.[/yellow]")
+
     except Exception:
         pass
 

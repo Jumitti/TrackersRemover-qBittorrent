@@ -1,6 +1,6 @@
 [project]
 name = "trackersremoverqbt"
-version = "0.4.1"
+version = "0.4.2"
 description = "Automatically removes trackers from active qBittorrent downloads."
 readme = "README.md"
 authors = [
@@ -10,7 +10,11 @@ license = "MIT"
 requires-python = ">=3.8"
 dependencies = [
   "qbittorrent-api",
-  "rich"
+  "rich>=14.1.0",
+  "requests>=2.32.4",
+  "urllib3>=2.5.0",
+  "rumps; sys_platform == 'darwin'",
+  "macmenuqbt; sys_platform == 'darwin'"
 ]
 
 [project.urls]
