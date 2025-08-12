@@ -1,6 +1,6 @@
 # TrackersRemover-qBittorrent 🗑️
 
-![PyPI version](https://img.shields.io/pypi/v/trackersremoverqbt?label=PyPI%20Version) ![Monthly Downloads](https://img.shields.io/badge/dynamic/json?color=blue&label=Monthly%20Downloads&query=data.last_month&url=https%3A%2F%2Fpypistats.org%2Fapi%2Fpackages%2Ftrackersremoverqbt%2Frecent)
+![PyPI version](https://img.shields.io/pypi/v/trackersremoverqbt?label=PyPI%20Version)
 
 TrackersRemover-qBittorrent is a Python script that connects to qBittorrent's Web UI and removes trackers from torrents once their download speed exceeds a configurable threshold. This can help improve privacy or reduce reliance on certain trackers.
 
